@@ -117,8 +117,9 @@ namespace prog {
         input >> filename;
         saveToPNG(filename, image);
     }
-
-    void Script::invert() {
+    
+void Script::invert() {
+    // Transforms each individual pixel (r, g, b) to (255-r,255-g,255-b)
     for (int y = 0; y < pixels_.height(); y++) {
         for (int x = 0; x < pixels_.width(); x++) {
             rgb_value r = pixels_(x, y).red();
@@ -130,6 +131,7 @@ namespace prog {
 }
 
 void Script::to_gray_scale() {
+    // Transforms each pixel (r, g, b) to (r + g + b)/3
     for (int y = 0; y < pixels_.height(); y++) {
         for (int x = 0; x < pixels_.width(); x++) {
             rgb_value r = pixels_(x, y).red();
@@ -141,8 +143,8 @@ void Script::to_gray_scale() {
     }
 }
 
-void Script::replace(rgb_value r1, rgb_value g1, rgb_value b1,
-                      rgb_value r2, rgb_value g2, rgb_value b2) {
+void Script::replace(rgb_value r1, rgb_value g1, rgb_value b1, rgb_value r2, rgb_value g2, rgb_value b2) {
+    // Replaces all (r1,  g1, b1) pixels by (r2,  g2, b2)
     for (int y = 0; y < pixels_.height(); y++) {
         for (int x = 0; x < pixels_.width(); x++) {
             if (pixels_(x, y) == Color(r1, g1, b1)) {
@@ -153,6 +155,7 @@ void Script::replace(rgb_value r1, rgb_value g1, rgb_value b1,
 }
 
 void Script::fill(int x, int y, int w, int h, rgb_value r, rgb_value g, rgb_value b) {
+    // Assign (r, g, b) to all pixels contained in rectangle defined by top-left corner (x, y)
     for (int j = y; j < y + h; j++) {
         for (int i = x; i < x + w; i++) {
             pixels_(i, j) = Color(r, g, b);
@@ -161,6 +164,7 @@ void Script::fill(int x, int y, int w, int h, rgb_value r, rgb_value g, rgb_valu
 }
 
 void Script::h_mirror() {
+    // Mirror image horizontally
     for (int y = 0; y < pixels_.height(); y++) {
         for (int x = 0; x < pixels_.width() / 2; x++) {
             Color temp = pixels_(x, y);
@@ -171,6 +175,7 @@ void Script::h_mirror() {
 }
 
 void Script::v_mirror() {
+    // Mirror image vertically
     for (int y = 0; y < pixels_.height() / 2; y++) {
         for (int x = 0; x < pixels_.width(); x++) {
             Color temp = pixels_(x, y);
@@ -181,6 +186,7 @@ void Script::v_mirror() {
 }
 
 void Script::add(string filename, rgb_value r, rgb_value g, rgb_value b, int x, int y) {
+    // Copy all pixels from image stored in PNG file filename to the rectangle of the current image
     PNG png;
     png.loadFromPNG(filename);
     for (int j = 0; j < png.height(); j++) {
