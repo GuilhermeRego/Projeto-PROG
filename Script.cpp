@@ -219,7 +219,7 @@ namespace prog {
         Image new_image(w, h);
         for (int x_ = 0; x_ < w; x_++){
             for (int y_ = 0; y_ < h; y_++){
-                new_image.at(x_, y_) = image.at(x + x_, y + y_);
+                new_image.at(x_, y_) = pixels_(x + x_, y + y_);
             }
         }
         delete image;
@@ -231,7 +231,7 @@ namespace prog {
         Image new_image(height_, width_);
         for (int x = 0; x < width_; x++){
             for (int y = 0; y < height_; y++){
-                new_image.at(y, width_ - x - 1) = image.at(x, y);
+                new_image.at(y, width_ - x - 1) = pixels_(x, y);
             }
         }
         delete image;
@@ -243,7 +243,7 @@ namespace prog {
         Image new_image(height_, width_);
         for (int x = 0; x < width_; x++){
             for (int y = 0; y < height_; y++){
-                new_image.at(height_ - y - 1, x) = image.at(x, y);
+                new_image.at(height_ - y - 1, x) = pixels_(x, y);
             }
         }
         delete image;
