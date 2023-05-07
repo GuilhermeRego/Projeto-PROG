@@ -92,9 +92,23 @@ namespace prog {
             }
             continue;
         }
+        if (command == "rotate_left") {
+            rotate_left();
+            continue;
+        }
+        if (command == "rotate_right") {
+            rotate_right();
+            continue;
+        }
+        if (command == "crop") {
+            int x, y, w, h;
+            input >> x >> y >> w >> h;
+            crop(x, y, w, h);
+            continue;
+        }
         cout << "Error: Unrecognized command '" << command << "'." << endl;
     }
-}
+    }
 
     void Script::open() {
         // Replace current image (if any) with image read from PNG file.
@@ -103,6 +117,7 @@ namespace prog {
         input >> filename;
         image = loadFromPNG(filename);
     }
+
     void Script::blank() {
         // Replace current image (if any) with blank image.
         clear_image_if_any();
@@ -118,85 +133,120 @@ namespace prog {
         saveToPNG(filename, image);
     }
     
-void Script::invert() {
-    // Transforms each individual pixel (r, g, b) to (255-r,255-g,255-b)
-    for (int y = 0; y < pixels_.height(); y++) {
-        for (int x = 0; x < pixels_.width(); x++) {
-            rgb_value r = pixels_(x, y).red();
-            rgb_value g = pixels_(x, y).green();
-            rgb_value b = pixels_(x, y).blue();
-            pixels_(x, y) = Color(255 - r, 255 - g, 255 - b);
-        }
-    }
-}
-
-void Script::to_gray_scale() {
-    // Transforms each pixel (r, g, b) to (r + g + b)/3
-    for (int y = 0; y < pixels_.height(); y++) {
-        for (int x = 0; x < pixels_.width(); x++) {
-            rgb_value r = pixels_(x, y).red();
-            rgb_value g = pixels_(x, y).green();
-            rgb_value b = pixels_(x, y).blue();
-            rgb_value v = (r + g + b) / 3;
-            pixels_(x, y) = Color(v, v, v);
-        }
-    }
-}
-
-void Script::replace(rgb_value r1, rgb_value g1, rgb_value b1, rgb_value r2, rgb_value g2, rgb_value b2) {
-    // Replaces all (r1,  g1, b1) pixels by (r2,  g2, b2)
-    for (int y = 0; y < pixels_.height(); y++) {
-        for (int x = 0; x < pixels_.width(); x++) {
-            if (pixels_(x, y) == Color(r1, g1, b1)) {
-                pixels_(x, y) = Color(r2, g2, b2);
+    void Script::invert() {
+        // Transforms each individual pixel (r, g, b) to (255-r,255-g,255-b)
+        for (int y = 0; y < pixels_.height(); y++) {
+            for (int x = 0; x < pixels_.width(); x++) {
+                rgb_value r = pixels_(x, y).red();
+                rgb_value g = pixels_(x, y).green();
+                rgb_value b = pixels_(x, y).blue();
+                pixels_(x, y) = Color(255 - r, 255 - g, 255 - b);
             }
         }
     }
-}
 
-void Script::fill(int x, int y, int w, int h, rgb_value r, rgb_value g, rgb_value b) {
-    // Assign (r, g, b) to all pixels contained in rectangle defined by top-left corner (x, y)
-    for (int j = y; j < y + h; j++) {
-        for (int i = x; i < x + w; i++) {
-            pixels_(i, j) = Color(r, g, b);
-        }
-    }
-}
-
-void Script::h_mirror() {
-    // Mirror image horizontally
-    for (int y = 0; y < pixels_.height(); y++) {
-        for (int x = 0; x < pixels_.width() / 2; x++) {
-            Color temp = pixels_(x, y);
-            pixels_(x, y) = pixels_(pixels_.width() - 1 - x, y);
-            pixels_(pixels_.width() - 1 - x, y) = temp;
-        }
-    }
-}
-
-void Script::v_mirror() {
-    // Mirror image vertically
-    for (int y = 0; y < pixels_.height() / 2; y++) {
-        for (int x = 0; x < pixels_.width(); x++) {
-            Color temp = pixels_(x, y);
-            pixels_(x, y) = pixels_(x, pixels_.height() - 1 - y);
-            pixels_(x, pixels_.height() - 1 - y) = temp;
-        }
-    }
-}
-
-void Script::add(string filename, rgb_value r, rgb_value g, rgb_value b, int x, int y) {
-    // Copy all pixels from image stored in PNG file filename to the rectangle of the current image
-    PNG png;
-    png.loadFromPNG(filename);
-    for (int j = 0; j < png.height(); j++) {
-        for (int i = 0; i < png.width(); i++) {
-            Color color = png(i, j);
-            if (color != Color(r, g, b)) {
-                pixels_(x + i, y + j) = color;
+    void Script::to_gray_scale() {
+        // Transforms each pixel (r, g, b) to (r + g + b)/3
+        for (int y = 0; y < pixels_.height(); y++) {
+            for (int x = 0; x < pixels_.width(); x++) {
+                rgb_value r = pixels_(x, y).red();
+                rgb_value g = pixels_(x, y).green();
+                rgb_value b = pixels_(x, y).blue();
+                rgb_value v = (r + g + b) / 3;
+                pixels_(x, y) = Color(v, v, v);
             }
         }
     }
-}
 
+    void Script::replace(rgb_value r1, rgb_value g1, rgb_value b1, rgb_value r2, rgb_value g2, rgb_value b2) {
+        // Replaces all (r1,  g1, b1) pixels by (r2,  g2, b2)
+        for (int y = 0; y < pixels_.height(); y++) {
+            for (int x = 0; x < pixels_.width(); x++) {
+                if (pixels_(x, y) == Color(r1, g1, b1)) {
+                    pixels_(x, y) = Color(r2, g2, b2);
+                }
+            }
+        }
+    }
+
+    void Script::fill(int x, int y, int w, int h, rgb_value r, rgb_value g, rgb_value b) {
+        // Assign (r, g, b) to all pixels contained in rectangle defined by top-left corner (x, y)
+        for (int j = y; j < y + h; j++) {
+            for (int i = x; i < x + w; i++) {
+                pixels_(i, j) = Color(r, g, b);
+            }
+        }
+    }
+
+    void Script::h_mirror() {
+        // Mirror image horizontally
+        for (int y = 0; y < pixels_.height(); y++) {
+            for (int x = 0; x < pixels_.width() / 2; x++) {
+                Color temp = pixels_(x, y);
+                pixels_(x, y) = pixels_(pixels_.width() - 1 - x, y);
+                pixels_(pixels_.width() - 1 - x, y) = temp;
+            }
+        }
+    }
+
+    void Script::v_mirror() {
+        // Mirror image vertically
+        for (int y = 0; y < pixels_.height() / 2; y++) {
+            for (int x = 0; x < pixels_.width(); x++) {
+                Color temp = pixels_(x, y);
+                pixels_(x, y) = pixels_(x, pixels_.height() - 1 - y);
+                pixels_(x, pixels_.height() - 1 - y) = temp;
+            }
+        }
+    }
+
+    void Script::add(string filename, rgb_value r, rgb_value g, rgb_value b, int x, int y) {
+        // Copy all pixels from image stored in PNG file filename to the rectangle of the current image
+        PNG png;
+        png.loadFromPNG(filename);
+        for (int j = 0; j < png.height(); j++) {
+            for (int i = 0; i < png.width(); i++) {
+                Color color = png(i, j);
+                if (color != Color(r, g, b)) {
+                    pixels_(x + i, y + j) = color;
+                }
+            }
+        }
+    }
+
+    void Script::crop(int x, int y, int w, int h){
+        // Crop the image
+        Image new_image(w, h);
+        for (int x_ = 0; x_ < w; x_++){
+            for (int y_ = 0; y_ < h; y_++){
+                new_image.at(x_, y_) = image.at(x + x_, y + y_);
+            }
+        }
+        delete image;
+        image = new Image(new_image);
+    }
+
+    void Script::rotate_left(){
+        // Rotate left
+        Image new_image(height_, width_);
+        for (int x = 0; x < width_; x++){
+            for (int y = 0; y < height_; y++){
+                new_image.at(y, width_ - x - 1) = image.at(x, y);
+            }
+        }
+        delete image;
+        image = new Image(new_image);
+    }
+
+    void Script::rotate_right(){
+        // Rotate right
+        Image new_image(height_, width_);
+        for (int x = 0; x < width_; x++){
+            for (int y = 0; y < height_; y++){
+                new_image.at(height_ - y - 1, x) = image.at(x, y);
+            }
+        }
+        delete image;
+        image = new Image(new_image);
+    }
 }
