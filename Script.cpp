@@ -135,24 +135,24 @@ namespace prog {
     
     void Script::invert() {
         // Transforms each individual pixel (r, g, b) to (255-r,255-g,255-b)
-        for (int y = 0; y < pixels_.height(); y++) {
+        for (int y = 0; y < pixels_.height(); y++) {                    // Loops that run through the image 
             for (int x = 0; x < pixels_.width(); x++) {
-                rgb_value r = pixels_(x, y).red();
-                rgb_value g = pixels_(x, y).green();
+                rgb_value r = pixels_(x, y).red();                      
+                rgb_value g = pixels_(x, y).green();                    // rgb_values r, g and b keep the red, green and blue values of the pixel in (x,y)
                 rgb_value b = pixels_(x, y).blue();
-                pixels_(x, y) = Color(255 - r, 255 - g, 255 - b);
+                pixels_(x, y) = Color(255 - r, 255 - g, 255 - b);       // The pixel color is set to the inverse
             }
         }
     }
 
     void Script::to_gray_scale() {
         // Transforms each pixel (r, g, b) to (r + g + b)/3
-        for (int y = 0; y < pixels_.height(); y++) {
+        for (int y = 0; y < pixels_.height(); y++) {                    // Loops that run through the image
             for (int x = 0; x < pixels_.width(); x++) {
                 rgb_value r = pixels_(x, y).red();
-                rgb_value g = pixels_(x, y).green();
+                rgb_value g = pixels_(x, y).green();                    // rgb_values r, g and b keep the red, green and blue values of the pixel in (x,y)
                 rgb_value b = pixels_(x, y).blue();
-                rgb_value v = (r + g + b) / 3;
+                rgb_value v = (r + g + b) / 3;                          // New rgb_value that will be the color of the pixel (x,y)
                 pixels_(x, y) = Color(v, v, v);
             }
         }
@@ -160,10 +160,10 @@ namespace prog {
 
     void Script::replace(rgb_value r1, rgb_value g1, rgb_value b1, rgb_value r2, rgb_value g2, rgb_value b2) {
         // Replaces all (r1,  g1, b1) pixels by (r2,  g2, b2)
-        for (int y = 0; y < pixels_.height(); y++) {
+        for (int y = 0; y < pixels_.height(); y++) {                    // Loops that run through the image
             for (int x = 0; x < pixels_.width(); x++) {
-                if (pixels_(x, y) == Color(r1, g1, b1)) {
-                    pixels_(x, y) = Color(r2, g2, b2);
+                if (pixels_(x, y) == Color(r1, g1, b1)) {               // Replace only if the pixel (x,y) is (r1, g1, b1)
+                    pixels_(x, y) = Color(r2, g2, b2);                  // by (r2, g2, b2), as requested
                 }
             }
         }
@@ -171,30 +171,30 @@ namespace prog {
 
     void Script::fill(int x, int y, int w, int h, rgb_value r, rgb_value g, rgb_value b) {
         // Assign (r, g, b) to all pixels contained in rectangle defined by top-left corner (x, y)
-        for (int j = y; j < y + h; j++) {
+        for (int j = y; j < y + h; j++) {                               // Loops that run through the image
             for (int i = x; i < x + w; i++) {
-                pixels_(i, j) = Color(r, g, b);
+                pixels_(i, j) = Color(r, g, b);                         // Every pixel in the image is set to the color (r, g, b)
             }
         }
     }
 
     void Script::h_mirror() {
         // Mirror image horizontally
-        for (int y = 0; y < pixels_.height(); y++) {
+        for (int y = 0; y < pixels_.height(); y++) {                    // Loops that run through the image
             for (int x = 0; x < pixels_.width() / 2; x++) {
-                Color temp = pixels_(x, y);
-                pixels_(x, y) = pixels_(pixels_.width() - 1 - x, y);
-                pixels_(pixels_.width() - 1 - x, y) = temp;
+                Color temp = pixels_(x, y);                             // Set the color of (x,y) to the correspondent pixel mirrored
+                pixels_(x, y) = pixels_(pixels_.width() - 1 - x, y);    // that is (pixels_.width() - 1 - x, y) and vice-versa
+                pixels_(pixels_.width() - 1 - x, y) = temp;             // the color temp is set so we don't lose the color of the current pixel (x,y)
             }
         }
     }
 
     void Script::v_mirror() {
         // Mirror image vertically
-        for (int y = 0; y < pixels_.height() / 2; y++) {
+        for (int y = 0; y < pixels_.height() / 2; y++) {                // Loops that run through the image
             for (int x = 0; x < pixels_.width(); x++) {
-                Color temp = pixels_(x, y);
-                pixels_(x, y) = pixels_(x, pixels_.height() - 1 - y);
+                Color temp = pixels_(x, y);                             // Set the color of (x,y) to the correspondent pixel mirrored
+                pixels_(x, y) = pixels_(x, pixels_.height() - 1 - y);   // that is (x, pixels_.height() - 1 - y) and vice-versa
                 pixels_(x, pixels_.height() - 1 - y) = temp;
             }
         }
@@ -204,49 +204,49 @@ namespace prog {
         // Copy all pixels from image stored in PNG file filename to the rectangle of the current image
         PNG png;
         png.loadFromPNG(filename);
-        for (int j = 0; j < png.height(); j++) {
+        for (int j = 0; j < png.height(); j++) {                        // Loops that run through the png
             for (int i = 0; i < png.width(); i++) {
-                Color color = png(i, j);
-                if (color != Color(r, g, b)) {
-                    pixels_(x + i, y + j) = color;
-                }
-            }
+                Color color = png(i, j);                                // Get the color of the current pixel in the png (i, j)
+                if (color != Color(r, g, b)) {                          // If the color is not the same in the png as it is in the image,
+                    pixels_(x + i, y + j) = color;                      // we need to replace it, and the correspondent pixel in the png
+                }                                                       // is in x + i (reallocating to the x value of the png) and y + j
+            }                                                           // (reallocating to the y value of the png)
         }
     }
 
     void Script::crop(int x, int y, int w, int h){
         // Crop the image
-        Image new_image(w, h);
-        for (int x_ = 0; x_ < w; x_++){
+        Image new_image(w, h);                                          // Create the new image which will be the result of the crop
+        for (int x_ = 0; x_ < w; x_++){                                 // Loops that will run through the new image, coloring every pixel
             for (int y_ = 0; y_ < h; y_++){
-                new_image.at(x_, y_) = pixels_(x + x_, y + y_);
+                new_image.at(x_, y_) = pixels_(x + x_, y + y_);         // Copying the pixels in the rectangle of the original image to the new one
             }
         }
-        delete image;
-        image = new Image(new_image);
+        delete image;                                                   // Delete the old image
+        image = new Image(new_image);                                   // and setting the new one as the current image
     }
 
     void Script::rotate_left(){
         // Rotate left
-        Image new_image(height_, width_);
-        for (int x = 0; x < width_; x++){
-            for (int y = 0; y < height_; y++){
-                new_image.at(y, width_ - x - 1) = pixels_(x, y);
-            }
+        Image new_image(height_, width_);                               // Since we are rotating the image 90º, the new image will have its 
+        for (int x = 0; x < width_; x++){                               // width as the height of the original image and the same to its height
+            for (int y = 0; y < height_; y++){                          // Loops that run through the image
+                new_image.at(y, width_ - x - 1) = pixels_(x, y);        // Setting the pixels of the new image, its x will be the y of the image and its
+            }                                                           // y will be the x of the image starting by the end
         }
-        delete image;
-        image = new Image(new_image);
+        delete image;                                                   // Delete the old image
+        image = new Image(new_image);                                   // and setting the new one as the current image
     }
 
     void Script::rotate_right(){
         // Rotate right
-        Image new_image(height_, width_);
-        for (int x = 0; x < width_; x++){
-            for (int y = 0; y < height_; y++){
-                new_image.at(height_ - y - 1, x) = pixels_(x, y);
-            }
+        Image new_image(height_, width_);                               // Since we are rotating the image 90º, the new image will have its
+        for (int x = 0; x < width_; x++){                               // width as the height of the original image and the same to its height 
+            for (int y = 0; y < height_; y++){                          // Loops that run through the image
+                new_image.at(height_ - y - 1, x) = pixels_(x, y);       // Setting the pixels of the new image, its x will be the y of the image starting
+            }                                                           // by the end and its y will be the x of the image
         }
-        delete image;
-        image = new Image(new_image);
+        delete image;                                                   // Delete the old image
+        image = new Image(new_image);                                   // and setting the new one as the current image
     }
 }
