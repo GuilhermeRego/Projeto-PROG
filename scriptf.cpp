@@ -63,14 +63,14 @@ namespace prog {
                 continue;
             }
             if (command == "replace") {
-                rgb_value r1, g1, b1, r2, g2, b2;
+                int r1, g1, b1, r2, g2, b2;
                 input >> r1 >> g1 >> b1 >> r2 >> g2 >> b2;
                 replace(r1, g1, b1,r2, g2, b2);
                 continue;
             }
             if (command == "fill") {
                 int x, y, w, h;
-                rgb_value r, g, b;
+                int r, g, b;
                 input >> x >> y >> w >> h >> r >> g >> b;
                 fill(x, y, w, h, r, g, b);
                 continue;
