@@ -250,4 +250,4 @@ void Script::add(string filename, rgb_value r, rgb_value g, rgb_value b, int x, 
 }
 
 
-add fill replace mal
+add mal
