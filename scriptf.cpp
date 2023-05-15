@@ -86,7 +86,7 @@ namespace prog {
             if (command == "add") {
                 string filename;
                 int x, y;
-                rgb_value r, g, b;
+                int r, g, b;
                 input >> filename >> r >> g >> b >> x >> y;
                 add(filename,r , g , b , x, y);
                 continue;
