@@ -199,18 +199,26 @@ void Script::v_mirror() {
 }
 
 void Script::add(string filename, rgb_value r, rgb_value g, rgb_value b, int x, int y) {
-        // Copy all pixels from image stored in PNG file filename to the rectangle of the current image
-        Image* png = new Image(0,0,Color());
-        png = loadFromPNG(filename);
-        for (int j = 0; j < png->height(); j++) {                        // Loops that run through the png
-            for (int i = 0; i < png->width(); i++) {
-                Color color = png->at(i, j);                                // Get the color of the current pixel in the png (i, j)
-                if (color != Color(r, g, b)) {                          // If the color is not the same in the png as it is in the image,
-                    image->at(x + i, y + j) = color;                      // we need to replace it, and the correspondent pixel in the png
-                }                                                        // is in x + i (reallocating to the x value of the png) and y + j
-            }                                                            // (reallocating to the y value of the png)
-        } 
-    }  
+    // Load the image from the file
+    Image* png = loadFromPNG(filename);
+    if (!png) {
+        // Failed to load image, return
+        return;
+    }
+    // Replace pixels in the region with pixels from the loaded image
+    for (int j = 0; j < png->height(); j++) {
+        for (int i = 0; i < png->width(); i++) {
+            Color color = png->at(i, j);
+            if (color != Color(r, g, b)) {
+                image->at(x + i, y + j) = color;
+            }
+        }
+    }
+    
+    // Free the loaded image
+    delete png;
+}
+
 
     void Script::crop(int x, int y, int w, int h){
         // Crop the image
