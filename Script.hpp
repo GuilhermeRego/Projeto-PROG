@@ -4,6 +4,8 @@
 #include <string>
 #include <fstream>
 #include "Image.hpp"
+#include "Color.hpp"
+#include "Image.hpp"
 
 namespace prog
 {
@@ -26,11 +28,11 @@ namespace prog
     void save();
     void invert();
     void to_gray_scale();
-    void replace(int r1, int g1, int b1, int r2, int g2, int b2);
-    void fill(int x, int y, int w, int h, int r, int g, int b);
+    void replace(rgb_value r1, rgb_value g1, rgb_value b1, rgb_value r2, rgb_value g2, rgb_value b2);
+    void fill(int x, int y, int w, int h, rgb_value r, rgb_value g, rgb_value b);
     void h_mirror();
     void v_mirror();
-    void add(const std::string& filename, int r, int g, int b, int x, int y);
+    void add(std::string filename, rgb_value r, rgb_value g, rgb_value b, int x, int y);
     void crop(int x, int y, int w, int h);
     void rotate_left();
     void rotate_right();
