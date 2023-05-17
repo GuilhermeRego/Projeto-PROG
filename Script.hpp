@@ -1,10 +1,8 @@
 #ifndef __prog_Script_hpp__
 #define __prog_Script_hpp__
-
+ 
 #include <string>
 #include <fstream>
-#include "Image.hpp"
-#include "Color.hpp"
 #include "Image.hpp"
 
 namespace prog
@@ -12,6 +10,7 @@ namespace prog
   class Script
   {
   public: 
+  
     Script(const std::string &filename);
     ~Script();
     void run();
@@ -36,6 +35,8 @@ namespace prog
     void crop(int x, int y, int w, int h);
     void rotate_left();
     void rotate_right();
+    void median_filter(int ws);
+      
   };
 }
 #endif
