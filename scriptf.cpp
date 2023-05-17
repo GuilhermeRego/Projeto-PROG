@@ -105,6 +105,12 @@ namespace prog {
                 rotate_right();
                 continue;
             }
+             if(command == "median_filter"){
+                int ws;
+                input >> ws;
+                median_filter(ws);
+                continue;
+            }
         cout << "Error: Unrecognized command '" << command << "'." << endl;
     }
     }
@@ -219,7 +225,6 @@ void Script::add(string filename, rgb_value r, rgb_value g, rgb_value b, int x, 
     delete png;
 }
 
-
     void Script::crop(int x, int y, int w, int h){
         // Crop the image
         Image new_image(w, h);                                          // Create the new image which will be the result of the crop
@@ -258,4 +263,69 @@ void Script::add(string filename, rgb_value r, rgb_value g, rgb_value b, int x, 
 }
 
 
-add mal
+void Script::median_filter(int ws) {
+    // Create a new image with the same dimensions as the original image
+    Image new_image(image->width(), image->height());
+
+    // Iterate over each pixel in the original image
+    for (int x = 0; x < image->width(); x++) {
+        for (int y = 0; y < image->height(); y++) {
+            // Create vectors to store RGB values for the neighboring pixels within the window
+            std::vector<rgb_value> red;
+            std::vector<rgb_value> green;
+            std::vector<rgb_value> blue;
+
+            // Iterate over the neighboring pixels within the specified window size
+            for (int nx = std::max(0, x - ws / 2); nx <= std::min(image->width() - 1, x + ws / 2); nx++) {
+                for (int ny = std::max(0, y - ws / 2); ny <= std::min(image->height() - 1, y + ws / 2); ny++) {
+                    // Store the RGB values of the neighboring pixels
+                    red.push_back(image->at(nx, ny).red());
+                    green.push_back(image->at(nx, ny).green());
+                    blue.push_back(image->at(nx, ny).blue());
+                }
+            }
+            
+            // Sort the RGB values in ascending order
+            std::sort(red.begin(), red.end());
+            std::sort(green.begin(), green.end());
+            std::sort(blue.begin(), blue.end());
+
+            // Calculate the median RGB values
+            rgb_value median_red;
+            rgb_value median_green;
+            rgb_value median_blue;
+
+            if (red.size() % 2 == 0) {
+                // If the number of values is even, take the average of the two middle values
+                int mid = red.size() / 2;
+                median_red = (red[mid] + red[mid - 1]) / 2;
+            } else {
+                // If the number of values is odd, take the middle value
+                median_red = red[(red.size() - 1) / 2];
+            }
+
+            // Apply the same logic for green and blue channels
+            if (green.size() % 2 == 0) {
+                int mid = green.size() / 2;
+                median_green = (green[mid] + green[mid - 1]) / 2;
+            } else {
+                median_green = green[(green.size() - 1) / 2];
+            }
+
+            if (blue.size() % 2 == 0) {
+                int mid = blue.size() / 2;
+                median_blue = (blue[mid] + blue[mid - 1]) / 2;
+            } else {
+                median_blue = blue[(blue.size() - 1) / 2];
+            }
+
+            // Set the median RGB values for the current pixel in the new image
+            new_image.at(x, y) = Color(median_red, median_green, median_blue);
+        }
+    }
+    //Delete the original image
+    delete image;
+    //Assign the new image
+    image = new Image(new_image);
+}
+}
