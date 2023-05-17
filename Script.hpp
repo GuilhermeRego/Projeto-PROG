@@ -36,7 +36,6 @@ namespace prog
     void rotate_left();
     void rotate_right();
     void median_filter(int ws);
-      
   };
 }
 #endif
